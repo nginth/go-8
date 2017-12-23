@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -24,8 +27,8 @@ func TestInitialize(t *testing.T) {
 	go8.index = 0x12
 	go8.pc = 0xF3E4
 	go8.gfx[2047] = 0xFF
-	go8.delay_timer = 0x23
-	go8.sound_timer = 0x34
+	go8.delayTimer = 0x23
+	go8.soundTimer = 0x34
 	go8.stack[14] = 0x0F
 	go8.sp = 0x22
 	go8.key[0] = 0x11
@@ -37,15 +40,37 @@ func TestInitialize(t *testing.T) {
 	}
 }
 
+func TestReadROM(t *testing.T) {
+	ex, err := os.Executable()
+	check(err)
+	path := filepath.Dir(ex)
+	f, err := ioutil.TempFile(path, "")
+	tmprom := f.Name()
+	check(err)
+
+	buf := []byte{0x55, 0x55, 0x55, 0x55}
+	f.Write(buf)
+	f.Close()
+
+	go8 := Go8{}
+	go8.loadROM(tmprom)
+	for i := 0; i < len(buf); i++ {
+		if go8.memory[i+512] != 0x55 {
+			t.Errorf("Invalid memory state. Got %d, wanted %d", go8.memory[i], 0x55)
+		}
+	}
+	os.Remove(tmprom)
+}
+
 func allFieldsInit(emu *Go8) bool {
 	return emu.opcode == 0 &&
-		allArrZero(emu.memory[:]) &&
+		allArrZero(emu.memory[80:]) && // fontset stored < 0x50
 		allArrZero(emu.V[:]) &&
 		emu.index == 0 &&
 		emu.pc == 0x0200 &&
 		allArrZero(emu.gfx[:]) &&
-		emu.delay_timer == 0 &&
-		emu.sound_timer == 0 &&
+		emu.delayTimer == 0 &&
+		emu.soundTimer == 0 &&
 		allArrZero(emu.stack[:]) &&
 		emu.sp == 0 &&
 		allArrZero(emu.key[:]) &&
