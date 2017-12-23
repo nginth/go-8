@@ -101,6 +101,21 @@ func TestCallSubroutine(t *testing.T) {
 	}
 }
 
+func TestReturnSubroutine(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.opcode = 0x00EE
+	go8.stack[0] = 0x512
+	go8.sp = 0x1
+	go8.ret()
+	if go8.sp != 0x0 {
+		t.Errorf("Wrong sp. Got %x, expected %x.", go8.sp, 0x1)
+	}
+	if go8.pc != 0x512+2 {
+		t.Errorf("Wrong pc. Got %x, expected %x.", go8.pc, 0x512)
+	}
+}
+
 func TestJump(t *testing.T) {
 	go8 := Go8{}
 	go8.initialize()

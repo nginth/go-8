@@ -77,15 +77,21 @@ func (emu *Go8) emulateCycle() {
 	emu.opcode = emu.getOpcode()
 	// execute opcode
 	switch emu.opcode & 0xF000 {
-	case 0xA000:
-		emu.index = emu.opcode & 0x0FFF
-		emu.pc += 2
+	case 0x0000:
+		switch emu.opcode & 0x000F {
+		case 0x000E:
+			// opcode 0x00EE : return from subroutine
+			emu.ret()
+		}
 	case 0x1000:
 		// opcode 0x1NNN : jump to address NNN
 		emu.jump()
 	case 0x2000:
 		// opcode 0x2NNN : call subroutine at address NNN
 		emu.callSubroutine()
+	case 0xA000:
+		emu.index = emu.opcode & 0x0FFF
+		emu.pc += 2
 	default:
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
 	}
@@ -113,6 +119,11 @@ func (emu *Go8) callSubroutine() {
 
 func (emu *Go8) jump() {
 	emu.pc = emu.opcode & 0x0FFF
+}
+
+func (emu *Go8) ret() {
+	emu.pc = emu.stack[emu.sp-1] + 2
+	emu.sp--
 }
 
 func memset(arr []uint8, val uint8) {
