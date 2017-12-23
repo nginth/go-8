@@ -101,6 +101,18 @@ func TestCallSubroutine(t *testing.T) {
 	}
 }
 
+func TestJump(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.opcode = 0x1111
+	go8.pc = 0x512
+	go8.jump()
+	fmt.Printf("%x\n", go8.pc)
+	if go8.pc != 0x111 {
+		t.Errorf("Wrong sp. Got %x, expected %x.", go8.sp, 0x111)
+	}
+}
+
 func allFieldsInit(emu *Go8) bool {
 	return emu.opcode == 0 &&
 		allArrZero(emu.memory[80:]) && // fontset stored < 0x50

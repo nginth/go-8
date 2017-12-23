@@ -80,6 +80,9 @@ func (emu *Go8) emulateCycle() {
 	case 0xA000:
 		emu.index = emu.opcode & 0x0FFF
 		emu.pc += 2
+	case 0x1000:
+		// opcode 0x1NNN : jump to address NNN
+		emu.jump()
 	case 0x2000:
 		// opcode 0x2NNN : call subroutine at address NNN
 		emu.callSubroutine()
@@ -105,6 +108,10 @@ func (emu *Go8) getOpcode() uint16 {
 func (emu *Go8) callSubroutine() {
 	emu.stack[emu.sp] = emu.pc
 	emu.sp++
+	emu.pc = emu.opcode & 0x0FFF
+}
+
+func (emu *Go8) jump() {
 	emu.pc = emu.opcode & 0x0FFF
 }
 
