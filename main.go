@@ -1,7 +1,7 @@
 package main
 
 func main() {
-	// setupGraphics
+	setupGraphics()
 	// setupInput
 	go8 := Go8{}
 	// initialize

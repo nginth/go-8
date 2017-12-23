@@ -112,7 +112,7 @@ func TestReturnSubroutine(t *testing.T) {
 		t.Errorf("Wrong sp. Got %x, expected %x.", go8.sp, 0x1)
 	}
 	if go8.pc != 0x512+2 {
-		t.Errorf("Wrong pc. Got %x, expected %x.", go8.pc, 0x512)
+		t.Errorf("Wrong pc. Got %x, expected %x.", go8.pc, 0x512+2)
 	}
 }
 
@@ -122,9 +122,22 @@ func TestJump(t *testing.T) {
 	go8.opcode = 0x1111
 	go8.pc = 0x512
 	go8.jump()
-	fmt.Printf("%x\n", go8.pc)
 	if go8.pc != 0x111 {
-		t.Errorf("Wrong sp. Got %x, expected %x.", go8.sp, 0x111)
+		t.Errorf("Wrong pc. Got %x, expected %x.", go8.pc, 0x111)
+	}
+}
+
+func TestClearScreen(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.opcode = 0x1111
+	go8.pc = 0x512
+	for i := 0; i < len(go8.gfx); i++ {
+		go8.gfx[i] = 0x12
+	}
+	go8.clearScreen()
+	if !allArrZero(go8.gfx[:]) {
+		t.Errorf("Gfx not cleared. Got %v, expected all zeroes.", go8.gfx[:])
 	}
 }
 

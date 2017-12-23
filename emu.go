@@ -79,6 +79,9 @@ func (emu *Go8) emulateCycle() {
 	switch emu.opcode & 0xF000 {
 	case 0x0000:
 		switch emu.opcode & 0x000F {
+		case 0x0000:
+			// opcode 0x00E0 : clear the screen
+			emu.clearScreen()
 		case 0x000E:
 			// opcode 0x00EE : return from subroutine
 			emu.ret()
@@ -124,6 +127,11 @@ func (emu *Go8) jump() {
 func (emu *Go8) ret() {
 	emu.pc = emu.stack[emu.sp-1] + 2
 	emu.sp--
+}
+
+func (emu *Go8) clearScreen() {
+	memset(emu.gfx[:], 0)
+	emu.pc += 2
 }
 
 func memset(arr []uint8, val uint8) {
