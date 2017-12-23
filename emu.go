@@ -38,8 +38,8 @@ type Go8 struct {
 	delayTimer uint8
 	soundTimer uint8
 	// stack and stack pointer
-	stack [16]uint8
-	sp    uint8
+	stack [16]uint16
+	sp    uint16
 	// keypad (input device)
 	key [16]uint8
 	// graphics
@@ -55,7 +55,7 @@ func (emu *Go8) initialize() {
 	memset(emu.gfx[:], 0x00)
 	emu.delayTimer = 0x00
 	emu.soundTimer = 0x00
-	memset(emu.stack[:], 0x00)
+	memset16(emu.stack[:], 0x00)
 	emu.sp = 0x00
 	memset(emu.key[:], 0x00)
 	emu.drawFlag = 0x00
@@ -80,6 +80,9 @@ func (emu *Go8) emulateCycle() {
 	case 0xA000:
 		emu.index = emu.opcode & 0x0FFF
 		emu.pc += 2
+	case 0x2000:
+		// opcode 0x2NNN : call subroutine at address NNN
+		emu.callSubroutine()
 	default:
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
 	}
@@ -99,7 +102,19 @@ func (emu *Go8) getOpcode() uint16 {
 	return uint16(emu.memory[emu.pc])<<8 | uint16(emu.memory[emu.pc+1])
 }
 
+func (emu *Go8) callSubroutine() {
+	emu.stack[emu.sp] = emu.pc
+	emu.sp++
+	emu.pc = emu.opcode & 0x0FFF
+}
+
 func memset(arr []uint8, val uint8) {
+	for i := 0; i < len(arr); i++ {
+		arr[i] = val
+	}
+}
+
+func memset16(arr []uint16, val uint16) {
 	for i := 0; i < len(arr); i++ {
 		arr[i] = val
 	}
