@@ -34,13 +34,19 @@ func (emu *Go8) initialize() {
 	memset(emu.stack[:], 0x00)
 	emu.sp = 0x00
 	memset(emu.key[:], 0x00)
+	emu.drawFlag = 0x00
 }
 
 func (emu *Go8) emulateCycle() {
 	// fetch opcode
+	emu.opcode = emu.getOpcode()
 	// decode opcode
 	// execute opcode
 	// update timers
+}
+
+func (emu *Go8) getOpcode() uint16 {
+	return uint16(emu.memory[emu.pc])<<8 | uint16(emu.memory[emu.pc+1])
 }
 
 func memset(arr []uint8, val uint8) {

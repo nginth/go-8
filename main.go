@@ -5,6 +5,7 @@ func main() {
 	// setupInput
 	go8 := Go8{}
 	// initialize
+	go8.V[0] = 12
 	go8.initialize()
 	// TODO: load ROM
 	// go8.loadROM("rom")
