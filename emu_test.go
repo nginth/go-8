@@ -31,18 +31,18 @@ func TestInitialize(t *testing.T) {
 	go8.key[0] = 0x11
 	go8.drawFlag = 0x1
 	go8.initialize()
-	if !allFieldsZero(&go8) {
+	if !allFieldsInit(&go8) {
 		t.Error("Not initialized to zero.")
 		fmt.Println(go8)
 	}
 }
 
-func allFieldsZero(emu *Go8) bool {
+func allFieldsInit(emu *Go8) bool {
 	return emu.opcode == 0 &&
 		allArrZero(emu.memory[:]) &&
 		allArrZero(emu.V[:]) &&
 		emu.index == 0 &&
-		emu.pc == 0 &&
+		emu.pc == 0x0200 &&
 		allArrZero(emu.gfx[:]) &&
 		emu.delay_timer == 0 &&
 		emu.sound_timer == 0 &&

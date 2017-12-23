@@ -27,7 +27,7 @@ func (emu *Go8) initialize() {
 	memset(emu.memory[:], 0x00)
 	memset(emu.V[:], 0x00)
 	emu.index = 0x0000
-	emu.pc = 0x0000
+	emu.pc = 0x0200
 	memset(emu.gfx[:], 0x00)
 	emu.delay_timer = 0x00
 	emu.sound_timer = 0x00
@@ -41,12 +41,19 @@ func (emu *Go8) emulateCycle() {
 	// fetch opcode
 	emu.opcode = emu.getOpcode()
 	// decode opcode
+	emu.index = emu.getIndex()
+	emu.pc += 2
 	// execute opcode
+
 	// update timers
 }
 
 func (emu *Go8) getOpcode() uint16 {
 	return uint16(emu.memory[emu.pc])<<8 | uint16(emu.memory[emu.pc+1])
+}
+
+func (emu *Go8) getIndex() uint16 {
+	return emu.opcode & 0x0FFF
 }
 
 func memset(arr []uint8, val uint8) {
