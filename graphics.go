@@ -24,13 +24,12 @@ func setupGraphics() *pixelgl.Window {
 	}
 	window, err := pixelgl.NewWindow(cfg)
 	check(err)
+	window.Clear(colornames.Black)
 	return window
 }
 
 func updateWindow(window *pixelgl.Window, gfx []uint8) {
-	window.Clear(colornames.Black)
 	drawGfx(window, gfx[:])
-
 	window.Update()
 }
 

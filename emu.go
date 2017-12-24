@@ -6,6 +6,8 @@ import (
 	"math/rand"
 )
 
+const spriteWidth = 8
+
 var fontset = [80]uint8{
 	0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
 	0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -129,6 +131,8 @@ func (emu *Go8) emulateCycle() {
 		emu.addJump()
 	case 0xC000:
 		emu.rand()
+	case 0xD000:
+		emu.draw()
 	default:
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
 	}
@@ -314,6 +318,30 @@ func (emu *Go8) addJump() {
 func (emu *Go8) rand() {
 	x := emu.xreg()
 	emu.V[x] = uint8(rand.Intn(256)) & uint8((emu.opcode & 0x00FF))
+}
+
+func (emu *Go8) draw() {
+	x := emu.V[emu.xreg()]
+	y := emu.V[emu.yreg()]
+	height := emu.opcode & 0x000F
+
+	emu.V[0xF] = 0
+	var yline uint16
+	var xline uint16
+	for yline = 0; yline < height; yline++ {
+		pixelLine := uint16(emu.memory[emu.index+yline])
+		for xline = 0; xline < spriteWidth; xline++ {
+			if (pixelLine & (0x80 >> xline)) != 0 {
+				pixel := uint16(x) + xline + ((uint16(y) + yline) * 64)
+				if emu.gfx[pixel] == 1 {
+					emu.V[0xF] = 1
+				}
+				emu.gfx[pixel] ^= 1
+			}
+		}
+	}
+	emu.drawFlag = true
+	emu.pc += 2
 }
 
 func (emu *Go8) xreg() uint16 {

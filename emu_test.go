@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 )
 
@@ -437,6 +438,43 @@ func TestAddJump(t *testing.T) {
 	go8.V[0] = 0x4
 	go8.addJump()
 	checkPc(0x123+0x4, go8.pc, t)
+}
+
+func TestDraw(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.pc = 0x000
+	go8.opcode = 0xD003
+	go8.memory[go8.index] = 0x3C
+	go8.memory[go8.index+1] = 0x18
+	go8.memory[go8.index+2] = 0x18
+	go8.draw()
+	lo, hi := 0, 8
+	expected := []uint8{0, 0, 1, 1, 1, 1, 0, 0}
+	if !reflect.DeepEqual(go8.gfx[lo:hi], expected) {
+		t.Errorf("Graphics mismatch. At [%d:%d]. Expected %v, got %v.",
+			lo,
+			hi,
+			go8.gfx[lo:hi],
+			expected)
+	}
+	lo, hi = 64, 72
+	expected = []uint8{0, 0, 0, 1, 1, 0, 0, 0}
+	if !reflect.DeepEqual(go8.gfx[lo:hi], expected) {
+		t.Errorf("Graphics mismatch. At [%d:%d]. Expected %v, got %v.",
+			lo,
+			hi,
+			go8.gfx[lo:hi],
+			expected)
+	}
+	lo, hi = 128, 136
+	if !reflect.DeepEqual(go8.gfx[lo:hi], expected) {
+		t.Errorf("Graphics mismatch. At [%d:%d]. Expected %v, got %v.",
+			lo,
+			hi,
+			go8.gfx[lo:hi],
+			expected)
+	}
 }
 
 func allFieldsInit(emu *Go8) bool {
