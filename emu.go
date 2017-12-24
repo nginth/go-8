@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 )
 
 var fontset = [80]uint8{
@@ -126,6 +127,8 @@ func (emu *Go8) emulateCycle() {
 		emu.setIndex()
 	case 0xB000:
 		emu.addJump()
+	case 0xC000:
+		emu.rand()
 	default:
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
 	}
@@ -306,6 +309,11 @@ func (emu *Go8) setIndex() {
 
 func (emu *Go8) addJump() {
 	emu.pc = uint16(emu.V[0]) + (emu.opcode & 0x0FFF)
+}
+
+func (emu *Go8) rand() {
+	x := emu.xreg()
+	emu.V[x] = uint8(rand.Intn(256)) & uint8((emu.opcode & 0x00FF))
 }
 
 func (emu *Go8) xreg() uint16 {
