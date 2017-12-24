@@ -110,6 +110,14 @@ func (emu *Go8) emulateCycle() {
 			emu.xorRegs()
 		case 0x0004:
 			emu.addRegs()
+		case 0x0005:
+			emu.subRegs()
+		case 0x0006:
+			emu.rshift()
+		case 0x0007:
+			emu.subRegsReverse()
+		case 0x000E:
+			emu.lshift()
 		}
 	case 0xA000:
 		emu.index = emu.opcode & 0x0FFF
