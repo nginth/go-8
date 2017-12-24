@@ -157,6 +157,82 @@ func TestAddRegs(t *testing.T) {
 	}
 }
 
+func TestIfEqual(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.opcode = 0x3122
+	go8.V[1] = 0x22
+	go8.pc = 0x512
+	go8.ifEqual()
+	checkPc(0x512+4, go8.pc, t)
+
+	go8.V[1] = 0x01
+	go8.pc = 0x512
+	go8.ifEqual()
+	checkPc(0x512+2, go8.pc, t)
+}
+
+func TestIfNotEqual(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.opcode = 0x4122
+	go8.V[1] = 0x22
+	go8.pc = 0x512
+	go8.ifNotEqual()
+	checkPc(0x512+2, go8.pc, t)
+
+	go8.V[1] = 0x01
+	go8.pc = 0x512
+	go8.ifNotEqual()
+	checkPc(0x512+4, go8.pc, t)
+}
+
+func TestIfEqualReg(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.opcode = 0x5120
+	go8.V[1] = 0x22
+	go8.V[2] = 0x22
+	go8.pc = 0x512
+	go8.ifEqualReg()
+	checkPc(0x512+4, go8.pc, t)
+
+	go8.V[1] = 0x01
+	go8.pc = 0x512
+	go8.ifEqualReg()
+	checkPc(0x512+2, go8.pc, t)
+}
+
+func TestSetConstant(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.opcode = 0x6142
+	go8.setConstant()
+	if go8.V[1] != 0x42 {
+		t.Errorf("Wrong value for V[1]. Got %x, expected %x", go8.V[1], 0x42)
+	}
+}
+
+func TestAddConstant(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.opcode = 0x6142
+	go8.V[1] = 0x3
+	go8.addConstant()
+	if go8.V[1] != 0x45 {
+		t.Errorf("Wrong value for V[1]. Got %x, expected %x", go8.V[1], 0x45)
+	}
+	go8.opcode = 0x6101
+	go8.V[1] = 0xFF
+	go8.addConstant()
+	if go8.V[1] != 0x00 {
+		t.Errorf("Wrong value for V[1]. Got %x, expected %x", go8.V[1], 0x00)
+	}
+	if go8.V[0xF] != 0x0 {
+		t.Errorf("Wrong value for carry flag. Got %x, expected %x", go8.V[0xF], 0x00)
+	}
+}
+
 func allFieldsInit(emu *Go8) bool {
 	return emu.opcode == 0 &&
 		allArrZero(emu.memory[80:]) && // fontset stored < 0x50
