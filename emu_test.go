@@ -203,6 +203,22 @@ func TestIfEqualReg(t *testing.T) {
 	checkPc(0x512+2, go8.pc, t)
 }
 
+func TestIfNotEqualReg(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.opcode = 0x9120
+	go8.V[1] = 0x22
+	go8.V[2] = 0x22
+	go8.pc = 0x512
+	go8.ifNotEqualReg()
+	checkPc(0x512+2, go8.pc, t)
+
+	go8.V[1] = 0x01
+	go8.pc = 0x512
+	go8.ifNotEqualReg()
+	checkPc(0x512+4, go8.pc, t)
+}
+
 func TestSetConstant(t *testing.T) {
 	go8 := Go8{}
 	go8.initialize()
@@ -399,6 +415,18 @@ func TestLshift(t *testing.T) {
 	if go8.V[0xF] != 1 {
 		t.Errorf("Wrong value for V[0xF]. Got %x, expected %x.", go8.V[0xF], 1)
 	}
+}
+
+func TestSetIndex(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.pc = 0x512
+	go8.opcode = 0xA123
+	go8.setIndex()
+	if go8.index != 0x123 {
+		t.Errorf("Wrong index. Got %x, expected %x.", go8.index, 0x123)
+	}
+	checkPc(0x512+2, go8.pc, t)
 }
 
 func allFieldsInit(emu *Go8) bool {

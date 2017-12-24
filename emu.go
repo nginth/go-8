@@ -24,6 +24,7 @@ var fontset = [80]uint8{
 	0xF0, 0x80, 0xF0, 0x80, 0x80, // F
 }
 
+// Go8 - CHIP-8 emulator
 type Go8 struct {
 	opcode uint16
 	memory [4096]uint8
@@ -119,9 +120,10 @@ func (emu *Go8) emulateCycle() {
 		case 0x000E:
 			emu.lshift()
 		}
+	case 0x9000:
+		emu.ifNotEqualReg()
 	case 0xA000:
-		emu.index = emu.opcode & 0x0FFF
-		emu.pc += 2
+		emu.setIndex()
 	default:
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
 	}
@@ -292,6 +294,11 @@ func (emu *Go8) lshift() {
 	emu.V[0xF] = (emu.V[y] & 0x80) >> 7
 	emu.V[y] <<= 1
 	emu.V[x] = emu.V[y]
+	emu.pc += 2
+}
+
+func (emu *Go8) setIndex() {
+	emu.index = emu.opcode & 0x0FFF
 	emu.pc += 2
 }
 
