@@ -10,6 +10,7 @@ import (
 const (
 	width       = 640
 	height      = 320
+	thickness   = 0
 	pixelSize   = 10
 	pixelWidth  = 64
 	pixelHeight = 32
@@ -36,7 +37,7 @@ func updateWindow(window *pixelgl.Window, gfx []uint8) {
 func drawGfx(window *pixelgl.Window, gfx []uint8) {
 	for y := 0; y < pixelHeight; y++ {
 		for x := 0; x < pixelWidth; x++ {
-			if gfx[y*pixelWidth+x] == 1 {
+			if gfx[x+y*pixelWidth] == 1 {
 				createSquare(x, y).Draw(window)
 			}
 		}
@@ -52,6 +53,6 @@ func createSquare(xpos, ypos int) *imdraw.IMDraw {
 	imd.Push(pixel.V(x+pixelSize, y))           // bottom right
 	imd.Push(pixel.V(x, y+pixelSize))           // top left
 	imd.Push(pixel.V(x+pixelSize, y+pixelSize)) // top right
-	imd.Rectangle(0)
+	imd.Rectangle(thickness)
 	return imd
 }
