@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/rand"
+
+	"github.com/faiface/pixel/pixelgl"
 )
 
 const spriteWidth = 8
@@ -133,10 +135,55 @@ func (emu *Go8) emulateCycle() {
 		emu.rand()
 	case 0xD000:
 		emu.draw()
+	case 0xE000:
+		switch emu.opcode & 0x00FF {
+
+		}
+	case 0xF000:
+		switch emu.opcode & 0x00FF {
+
+		}
 	default:
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
 	}
 	// update timers
+	emu.updateTimers()
+}
+
+func (emu *Go8) getOpcode() uint16 {
+	return uint16(emu.memory[emu.pc])<<8 | uint16(emu.memory[emu.pc+1])
+}
+
+var keymapping = map[uint8]pixelgl.Button{
+	0x1: pixelgl.Key1,
+	0x2: pixelgl.Key2,
+	0x3: pixelgl.Key3,
+	0xC: pixelgl.Key4,
+	0x4: pixelgl.KeyQ,
+	0x5: pixelgl.KeyW,
+	0x6: pixelgl.KeyE,
+	0xD: pixelgl.KeyR,
+	0x7: pixelgl.KeyA,
+	0x8: pixelgl.KeyS,
+	0x9: pixelgl.KeyD,
+	0xE: pixelgl.KeyF,
+	0xA: pixelgl.KeyZ,
+	0x0: pixelgl.KeyX,
+	0xB: pixelgl.KeyC,
+	0xF: pixelgl.KeyV,
+}
+
+func (emu *Go8) setKeys(window *pixelgl.Window) {
+	for key := 0; key < len(emu.key); key++ {
+		emu.key[key] = 0
+		button := keymapping[uint8(key)]
+		if window.Pressed(button) || window.JustPressed(button) || window.JustReleased(button) {
+			emu.key[key] = 1
+		}
+	}
+}
+
+func (emu *Go8) updateTimers() {
 	if emu.delayTimer > 0 {
 		emu.delayTimer--
 	}
@@ -146,10 +193,6 @@ func (emu *Go8) emulateCycle() {
 		}
 		emu.soundTimer--
 	}
-}
-
-func (emu *Go8) getOpcode() uint16 {
-	return uint16(emu.memory[emu.pc])<<8 | uint16(emu.memory[emu.pc+1])
 }
 
 func (emu *Go8) callSubroutine() {
