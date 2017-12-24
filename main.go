@@ -1,6 +1,10 @@
 package main
 
-import "github.com/faiface/pixel/pixelgl"
+import (
+	"math/rand"
+
+	"github.com/faiface/pixel/pixelgl"
+)
 
 func run() {
 	// setupInput
@@ -15,6 +19,9 @@ func run() {
 		//go8.emulateCycle()
 		if go8.drawFlag != 0 {
 			// TODO: draw graphics
+		}
+		for i := 0; i < len(go8.gfx); i++ {
+			go8.gfx[i] = uint8(rand.Intn(2))
 		}
 		updateWindow(window, go8.gfx[:])
 		// TODO: store key press state

@@ -28,19 +28,24 @@ func setupGraphics() *pixelgl.Window {
 
 func updateWindow(window *pixelgl.Window, gfx []uint8) {
 	window.Clear(colornames.Black)
-	for row := 0; row < pixelWidth; row++ {
-		for col := 0; col < pixelHeight; col++ {
-			if gfx[col+col*row] == 1 {
-				createSquare(row, col).Draw(window)
+	drawGfx(window, gfx[:])
+
+	window.Update()
+}
+
+func drawGfx(window *pixelgl.Window, gfx []uint8) {
+	for y := 0; y < pixelHeight; y++ {
+		for x := 0; x < pixelWidth; x++ {
+			if gfx[y*pixelWidth+x] == 1 {
+				createSquare(x, y).Draw(window)
 			}
 		}
 	}
-	window.Update()
 }
 
 func createSquare(xpos, ypos int) *imdraw.IMDraw {
 	imd := imdraw.New(nil)
-	imd.Color = pixel.RGB(1, 1, 1)
+	imd.Color = colornames.White
 	x := float64(pixelSize * xpos)
 	y := float64(pixelSize * ypos)
 	imd.Push(pixel.V(x, y))                     // bottom left
