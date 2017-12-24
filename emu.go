@@ -80,21 +80,15 @@ func (emu *Go8) emulateCycle() {
 	case 0x0000:
 		switch emu.opcode & 0x000F {
 		case 0x0000:
-			// opcode 0x00E0 : clear the screen
 			emu.clearScreen()
 		case 0x000E:
-			// opcode 0x00EE : return from subroutine
 			emu.ret()
-
 		}
 	case 0x1000:
-		// opcode 0x1NNN : jump to address NNN
 		emu.jump()
 	case 0x2000:
-		// opcode 0x2NNN : call subroutine at address NNN
 		emu.callSubroutine()
 	case 0x3000:
-		// opcode 0x3XNN : skip next instr if V[X] == NN
 		emu.ifEqual()
 	case 0x4000:
 		emu.ifNotEqual()
@@ -113,11 +107,8 @@ func (emu *Go8) emulateCycle() {
 		case 0x0003:
 			emu.andRegs()
 		case 0x0004:
-			// opcode 0x8XY4 : Vx += Vy
 			emu.addRegs()
-
 		}
-
 	case 0xA000:
 		emu.index = emu.opcode & 0x0FFF
 		emu.pc += 2
