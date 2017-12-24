@@ -100,12 +100,14 @@ func (emu *Go8) emulateCycle() {
 		emu.addConstant()
 	case 0x8000:
 		switch emu.opcode & 0x000F {
-		case 0x0001:
+		case 0x0000:
 			emu.setRegs()
-		case 0x0002:
+		case 0x0001:
 			emu.orRegs()
-		case 0x0003:
+		case 0x0002:
 			emu.andRegs()
+		case 0x0003:
+			emu.xorRegs()
 		case 0x0004:
 			emu.addRegs()
 		}
@@ -224,6 +226,13 @@ func (emu *Go8) andRegs() {
 	emu.pc += 2
 }
 
+func (emu *Go8) xorRegs() {
+	x := emu.xreg()
+	y := emu.yreg()
+	emu.V[x] ^= emu.V[y]
+	emu.pc += 2
+}
+
 func (emu *Go8) addRegs() {
 	x := emu.xreg()
 	y := emu.yreg()
@@ -237,7 +246,15 @@ func (emu *Go8) addRegs() {
 }
 
 func (emu *Go8) subRegs() {
-
+	x := emu.xreg()
+	y := emu.yreg()
+	if emu.V[y] > emu.V[x] {
+		emu.V[0xF] = 1
+	} else {
+		emu.V[0xF] = 0
+	}
+	emu.V[x] -= emu.V[y]
+	emu.pc += 2
 }
 
 func (emu *Go8) subRegsReverse() {
