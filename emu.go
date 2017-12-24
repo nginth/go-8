@@ -106,9 +106,16 @@ func (emu *Go8) emulateCycle() {
 		emu.addConstant()
 	case 0x8000:
 		switch emu.opcode & 0x000F {
+		case 0x0001:
+			emu.setRegs()
+		case 0x0002:
+			emu.orRegs()
+		case 0x0003:
+			emu.andRegs()
 		case 0x0004:
 			// opcode 0x8XY4 : Vx += Vy
 			emu.addRegs()
+
 		}
 
 	case 0xA000:
@@ -154,18 +161,6 @@ func (emu *Go8) clearScreen() {
 	emu.pc += 2
 }
 
-func (emu *Go8) addRegs() {
-	x := emu.xreg()
-	y := emu.yreg()
-	if emu.V[y] > 0xFF-emu.V[x] {
-		emu.V[0xF] = 1
-	} else {
-		emu.V[0xF] = 0
-	}
-	emu.V[x] += emu.V[y]
-	emu.pc += 2
-}
-
 func (emu *Go8) ifEqual() {
 	x := emu.xreg()
 	n := emu.opcode & 0x00FF
@@ -193,6 +188,15 @@ func (emu *Go8) ifEqualReg() {
 	emu.pc += 2
 }
 
+func (emu *Go8) ifNotEqualReg() {
+	x := emu.xreg()
+	y := emu.yreg()
+	if emu.V[x] != emu.V[y] {
+		emu.pc += 2
+	}
+	emu.pc += 2
+}
+
 func (emu *Go8) setConstant() {
 	x := emu.xreg()
 	n := emu.opcode & 0x00FF
@@ -206,6 +210,46 @@ func (emu *Go8) addConstant() {
 	// by spec, carry flag is not changed on constant add
 	emu.V[x] += uint8(n)
 	emu.pc += 2
+}
+
+func (emu *Go8) setRegs() {
+
+}
+
+func (emu *Go8) orRegs() {
+
+}
+
+func (emu *Go8) andRegs() {
+
+}
+
+func (emu *Go8) addRegs() {
+	x := emu.xreg()
+	y := emu.yreg()
+	if emu.V[y] > 0xFF-emu.V[x] {
+		emu.V[0xF] = 1
+	} else {
+		emu.V[0xF] = 0
+	}
+	emu.V[x] += emu.V[y]
+	emu.pc += 2
+}
+
+func (emu *Go8) subRegs() {
+
+}
+
+func (emu *Go8) subRegsReverse() {
+
+}
+
+func (emu *Go8) rshift() {
+
+}
+
+func (emu *Go8) lshift() {
+
 }
 
 func (emu *Go8) xreg() uint16 {
