@@ -256,7 +256,7 @@ func TestOrRegs(t *testing.T) {
 	go8 := Go8{}
 	go8.initialize()
 	go8.pc = 0x512
-	go8.opcode = 0x8120
+	go8.opcode = 0x8121
 	go8.V[1] = 0x12
 	go8.V[2] = 0x34
 	go8.orRegs()
@@ -270,7 +270,16 @@ func TestOrRegs(t *testing.T) {
 func TestAndRegs(t *testing.T) {
 	go8 := Go8{}
 	go8.initialize()
+	go8.pc = 0x512
+	go8.opcode = 0x8122
+	go8.V[1] = 0x12
+	go8.V[2] = 0x34
+	go8.andRegs()
+	if go8.V[1] != 0x10 {
+		t.Errorf("Wrong value for V[1]. Got %x, expected %x.", go8.V[1], 0x10)
+	}
 
+	checkPc(0x512+2, go8.pc, t)
 }
 
 func TestSubRegs(t *testing.T) {
