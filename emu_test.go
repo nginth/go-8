@@ -218,12 +218,15 @@ func TestAddConstant(t *testing.T) {
 	go8.initialize()
 	go8.opcode = 0x6142
 	go8.V[1] = 0x3
+	go8.pc = 0x512
 	go8.addConstant()
 	if go8.V[1] != 0x45 {
 		t.Errorf("Wrong value for V[1]. Got %x, expected %x", go8.V[1], 0x45)
 	}
+	checkPc(0x512+2, go8.pc, t)
 	go8.opcode = 0x6101
 	go8.V[1] = 0xFF
+	go8.pc = 0x512
 	go8.addConstant()
 	if go8.V[1] != 0x00 {
 		t.Errorf("Wrong value for V[1]. Got %x, expected %x", go8.V[1], 0x00)
@@ -231,6 +234,58 @@ func TestAddConstant(t *testing.T) {
 	if go8.V[0xF] != 0x0 {
 		t.Errorf("Wrong value for carry flag. Got %x, expected %x", go8.V[0xF], 0x00)
 	}
+	checkPc(0x512+2, go8.pc, t)
+}
+
+func TestSetRegs(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.pc = 0x512
+	go8.opcode = 0x8120
+	go8.V[1] = 0x12
+	go8.V[2] = 0xBE
+	go8.setRegs()
+	if go8.V[1] != go8.V[2] {
+		t.Errorf("Wrong value for V[1]. Got %x, expected %x.", go8.V[1], go8.V[2])
+	}
+
+	checkPc(0x512+2, go8.pc, t)
+}
+
+func TestOrRegs(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+
+}
+
+func TestAndRegs(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+
+}
+
+func TestSubRegs(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+
+}
+
+func TestSubRegsReverse(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+
+}
+
+func TestRshift(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+
+}
+
+func TestLshift(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+
 }
 
 func allFieldsInit(emu *Go8) bool {
