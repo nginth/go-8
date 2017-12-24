@@ -287,7 +287,12 @@ func (emu *Go8) rshift() {
 }
 
 func (emu *Go8) lshift() {
-
+	x := emu.xreg()
+	y := emu.yreg()
+	emu.V[0xF] = (emu.V[y] & 0x80) >> 7
+	emu.V[y] <<= 1
+	emu.V[x] = emu.V[y]
+	emu.pc += 2
 }
 
 func (emu *Go8) xreg() uint16 {
