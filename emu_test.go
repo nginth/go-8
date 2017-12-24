@@ -509,6 +509,19 @@ func TestIsNotPressed(t *testing.T) {
 	checkPc(0x512+4, go8.pc, t)
 }
 
+func TestStoreDelay(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.pc = 0x512
+	go8.opcode = 0xF107
+	go8.delayTimer = 12
+	go8.storeDelay()
+	if go8.V[1] != 12 {
+		t.Errorf("Wrong value for V[1]. Got %x, expected %x.", go8.V[1], 12)
+	}
+	checkPc(0x512+2, go8.pc, t)
+}
+
 func allFieldsInit(emu *Go8) bool {
 	return emu.opcode == 0 &&
 		allArrZero(emu.memory[80:]) && // fontset stored < 0x50

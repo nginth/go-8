@@ -144,7 +144,8 @@ func (emu *Go8) emulateCycle() {
 		}
 	case 0xF000:
 		switch emu.opcode & 0x00FF {
-
+		case 0x0007:
+			emu.storeDelay()
 		}
 	default:
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
@@ -403,6 +404,11 @@ func (emu *Go8) ifNotPressed() {
 	if emu.key[x] != 1 {
 		emu.pc += 2
 	}
+	emu.pc += 2
+}
+
+func (emu *Go8) storeDelay() {
+	emu.V[emu.xreg()] = emu.delayTimer
 	emu.pc += 2
 }
 
