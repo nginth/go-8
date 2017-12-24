@@ -1,29 +1,27 @@
 package main
 
-import "runtime"
+import "github.com/faiface/pixel/pixelgl"
 
-func init() {
-	runtime.LockOSThread()
-}
-
-func main() {
-	window := setupGraphics()
-	defer terminateGraphics()
+func run() {
 	// setupInput
 	go8 := Go8{}
 	// initialize
 	go8.initialize()
 	// TODO: load ROM
 	// go8.loadROM("rom")
-
+	win := setupGraphics()
 	// emulation loop
-	for !window.ShouldClose() {
-		go8.emulateCycle()
-		updateWindow(window)
+	for !win.Closed() {
+		//go8.emulateCycle()
 		if go8.drawFlag != 0 {
 			// TODO: draw graphics
 		}
+		win.Update()
 		// TODO: store key press state
 		// go8.setKeys()
 	}
+}
+
+func main() {
+	pixelgl.Run(run)
 }
