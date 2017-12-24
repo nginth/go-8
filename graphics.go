@@ -8,9 +8,11 @@ import (
 )
 
 const (
-	width     = 640
-	height    = 320
-	pixelSize = 10
+	width       = 640
+	height      = 320
+	pixelSize   = 10
+	pixelWidth  = 64
+	pixelHeight = 32
 )
 
 func setupGraphics() *pixelgl.Window {
@@ -24,17 +26,23 @@ func setupGraphics() *pixelgl.Window {
 	return window
 }
 
-func updateWindow(window *pixelgl.Window) {
+func updateWindow(window *pixelgl.Window, gfx []uint8) {
 	window.Clear(colornames.Black)
-	createSquare(1, 0).Draw(window)
+	for row := 0; row < pixelWidth; row++ {
+		for col := 0; col < pixelHeight; col++ {
+			if gfx[col+col*row] == 1 {
+				createSquare(row, col).Draw(window)
+			}
+		}
+	}
 	window.Update()
 }
 
-func createSquare(x, y float64) *imdraw.IMDraw {
+func createSquare(xpos, ypos int) *imdraw.IMDraw {
 	imd := imdraw.New(nil)
 	imd.Color = pixel.RGB(1, 1, 1)
-	x *= pixelSize
-	y *= pixelSize
+	x := float64(pixelSize * xpos)
+	y := float64(pixelSize * ypos)
 	imd.Push(pixel.V(x, y))                     // bottom left
 	imd.Push(pixel.V(x+pixelSize, y))           // bottom right
 	imd.Push(pixel.V(x, y+pixelSize))           // top left

@@ -16,7 +16,7 @@ func run() {
 		if go8.drawFlag != 0 {
 			// TODO: draw graphics
 		}
-		updateWindow(window)
+		updateWindow(window, go8.gfx[:])
 		// TODO: store key press state
 		// go8.setKeys()
 	}
