@@ -332,7 +332,33 @@ func TestSubRegs(t *testing.T) {
 func TestSubRegsReverse(t *testing.T) {
 	go8 := Go8{}
 	go8.initialize()
+	go8.pc = 0x512
+	go8.opcode = 0x8127
+	go8.V[1] = 18
+	go8.V[2] = 19
+	go8.subRegsReverse()
+	if go8.V[1] != 1 {
+		t.Errorf("Wrong value for V[1]. Got %x, expected %x.", go8.V[1], 1)
+	}
+	if go8.V[0xF] != 0 {
+		t.Errorf("Wrong value for V[0xF] (borrow flag). Got %x, expected %x.", go8.V[0xF], 0)
+	}
 
+	checkPc(0x512+2, go8.pc, t)
+
+	go8.pc = 0x512
+	go8.opcode = 0x8127
+	go8.V[1] = 20
+	go8.V[2] = 19
+	go8.subRegsReverse()
+	if go8.V[1] != 255 {
+		t.Errorf("Wrong value for V[1]. Got %x, expected %x.", go8.V[1], 255)
+	}
+	if go8.V[0xF] != 1 {
+		t.Errorf("Wrong value for V[0xF] (borrow flag). Got %x, expected %x.", go8.V[0xF], 1)
+	}
+
+	checkPc(0x512+2, go8.pc, t)
 }
 
 func TestRshift(t *testing.T) {
