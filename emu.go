@@ -50,6 +50,7 @@ type Go8 struct {
 	key [16]uint8
 	// graphics
 	drawFlag bool
+	input    *pixelgl.Window
 }
 
 func (emu *Go8) initialize() {
@@ -146,6 +147,8 @@ func (emu *Go8) emulateCycle() {
 		switch emu.opcode & 0x00FF {
 		case 0x0007:
 			emu.storeDelay()
+		case 0x000A:
+			emu.getKey()
 		}
 	default:
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
@@ -410,6 +413,19 @@ func (emu *Go8) ifNotPressed() {
 func (emu *Go8) storeDelay() {
 	emu.V[emu.xreg()] = emu.delayTimer
 	emu.pc += 2
+}
+
+func (emu *Go8) getKey() uint8 {
+	for {
+		for key := 0; key < len(emu.key); key++ {
+			emu.key[key] = 0
+			button := keymapping[uint8(key)]
+			if emu.input.Pressed(button) || emu.input.JustPressed(button) || emu.input.JustReleased(button) {
+				emu.key[key] = 1
+				return uint8(key)
+			}
+		}
+	}
 }
 
 func (emu *Go8) xreg() uint16 {
