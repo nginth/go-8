@@ -270,7 +270,12 @@ func (emu *Go8) subRegsReverse() {
 }
 
 func (emu *Go8) rshift() {
-
+	x := emu.xreg()
+	y := emu.yreg()
+	emu.V[0xF] = emu.V[y] & 0x01
+	emu.V[y] >>= 1
+	emu.V[x] = emu.V[y]
+	emu.pc += 2
 }
 
 func (emu *Go8) lshift() {

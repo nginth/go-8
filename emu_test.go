@@ -364,7 +364,21 @@ func TestSubRegsReverse(t *testing.T) {
 func TestRshift(t *testing.T) {
 	go8 := Go8{}
 	go8.initialize()
-
+	go8.pc = 0x512
+	go8.opcode = 0x8126
+	go8.V[1] = 0xFF
+	go8.V[2] = 0x03
+	go8.rshift()
+	if go8.V[1] != 0x01 {
+		t.Errorf("Wrong value for V[1]. Got %x, expected %x.", go8.V[1], 0x01)
+	}
+	if go8.V[2] != 0x01 {
+		t.Errorf("Wrong value for V[2]. Got %x, expected %x.", go8.V[2], 0x01)
+	}
+	// VF is set to the value of the least significant bit of VY before the shift.
+	if go8.V[0xF] != 1 {
+		t.Errorf("Wrong value for V[0xF]. Got %x, expected %x.", go8.V[0xF], 1)
+	}
 }
 
 func TestLshift(t *testing.T) {
