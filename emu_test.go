@@ -477,6 +477,38 @@ func TestDraw(t *testing.T) {
 	}
 }
 
+func TestIsPressed(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.pc = 0x512
+	go8.opcode = 0xE09E
+	go8.V[0] = 0x4
+	go8.key[0x4] = 1
+	go8.ifPressed()
+	checkPc(0x512+4, go8.pc, t)
+
+	go8.pc = 0x512
+	go8.V[0] = 0x5
+	go8.ifPressed()
+	checkPc(0x512+2, go8.pc, t)
+}
+
+func TestIsNotPressed(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.pc = 0x512
+	go8.opcode = 0xE09E
+	go8.V[0] = 0x4
+	go8.key[0x4] = 1
+	go8.ifNotPressed()
+	checkPc(0x512+2, go8.pc, t)
+
+	go8.pc = 0x512
+	go8.V[0] = 0x5
+	go8.ifNotPressed()
+	checkPc(0x512+4, go8.pc, t)
+}
+
 func allFieldsInit(emu *Go8) bool {
 	return emu.opcode == 0 &&
 		allArrZero(emu.memory[80:]) && // fontset stored < 0x50

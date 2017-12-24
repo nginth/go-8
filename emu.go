@@ -137,7 +137,10 @@ func (emu *Go8) emulateCycle() {
 		emu.draw()
 	case 0xE000:
 		switch emu.opcode & 0x00FF {
-
+		case 0x009E:
+			emu.ifPressed()
+		case 0x00A1:
+			emu.ifNotPressed()
 		}
 	case 0xF000:
 		switch emu.opcode & 0x00FF {
@@ -384,6 +387,22 @@ func (emu *Go8) draw() {
 		}
 	}
 	emu.drawFlag = true
+	emu.pc += 2
+}
+
+func (emu *Go8) ifPressed() {
+	x := emu.V[emu.xreg()]
+	if emu.key[x] == 1 {
+		emu.pc += 2
+	}
+	emu.pc += 2
+}
+
+func (emu *Go8) ifNotPressed() {
+	x := emu.V[emu.xreg()]
+	if emu.key[x] != 1 {
+		emu.pc += 2
+	}
 	emu.pc += 2
 }
 
