@@ -220,7 +220,10 @@ func (emu *Go8) setRegs() {
 }
 
 func (emu *Go8) orRegs() {
-
+	x := emu.xreg()
+	y := emu.yreg()
+	emu.V[x] |= emu.V[y]
+	emu.pc += 2
 }
 
 func (emu *Go8) andRegs() {
