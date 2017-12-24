@@ -1,8 +1,6 @@
 package main
 
 import (
-	"math/rand"
-
 	"github.com/faiface/pixel/pixelgl"
 )
 
@@ -16,14 +14,11 @@ func run() {
 	window := setupGraphics()
 	// emulation loop
 	for !window.Closed() {
-		//go8.emulateCycle()
-		if go8.drawFlag != 0 {
-			// TODO: draw graphics
+		go8.emulateCycle()
+		if go8.drawFlag {
+			updateWindow(window, go8.gfx[:])
 		}
-		for i := 0; i < len(go8.gfx); i++ {
-			go8.gfx[i] = uint8(rand.Intn(2))
-		}
-		updateWindow(window, go8.gfx[:])
+
 		// TODO: store key press state
 		// go8.setKeys()
 	}

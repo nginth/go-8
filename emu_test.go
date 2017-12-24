@@ -32,7 +32,7 @@ func TestInitialize(t *testing.T) {
 	go8.stack[14] = 0x0F
 	go8.sp = 0x22
 	go8.key[0] = 0x11
-	go8.drawFlag = 0x1
+	go8.drawFlag = true
 	go8.initialize()
 	if !allFieldsInit(&go8) {
 		t.Error("Not initialized to zero.")
@@ -76,12 +76,10 @@ func TestEmulateCycleSubroutine(t *testing.T) {
 	if go8.sp != 0x1 {
 		t.Errorf("Wrong sp. Got %x, expected %x.", go8.sp, 0x1)
 	}
-	if go8.pc != 0x222 {
-		t.Errorf("Wrong pc. Got %x, expected %x.", go8.pc, 0x222)
-	}
 	if go8.delayTimer != 1 {
 		t.Errorf("Wrong delay timer. Got %d, expected %d.", go8.delayTimer, 1)
 	}
+	checkPc(0x222, go8.pc, t)
 }
 
 func TestCallSubroutine(t *testing.T) {
@@ -96,9 +94,7 @@ func TestCallSubroutine(t *testing.T) {
 	if go8.sp != 0x1 {
 		t.Errorf("Wrong sp. Got %x, expected %x.", go8.sp, 0x1)
 	}
-	if go8.pc != 0x222 {
-		t.Errorf("Wrong pc. Got %x, expected %x.", go8.pc, 0x222)
-	}
+	checkPc(0x222, go8.pc, t)
 }
 
 func TestReturnSubroutine(t *testing.T) {
@@ -111,9 +107,7 @@ func TestReturnSubroutine(t *testing.T) {
 	if go8.sp != 0x0 {
 		t.Errorf("Wrong sp. Got %x, expected %x.", go8.sp, 0x1)
 	}
-	if go8.pc != 0x512+2 {
-		t.Errorf("Wrong pc. Got %x, expected %x.", go8.pc, 0x512+2)
-	}
+	checkPc(0x512+2, go8.pc, t)
 }
 
 func TestJump(t *testing.T) {
@@ -122,9 +116,7 @@ func TestJump(t *testing.T) {
 	go8.opcode = 0x1111
 	go8.pc = 0x512
 	go8.jump()
-	if go8.pc != 0x111 {
-		t.Errorf("Wrong pc. Got %x, expected %x.", go8.pc, 0x111)
-	}
+	checkPc(0x111, go8.pc, t)
 }
 
 func TestClearScreen(t *testing.T) {
@@ -138,6 +130,30 @@ func TestClearScreen(t *testing.T) {
 	go8.clearScreen()
 	if !allArrZero(go8.gfx[:]) {
 		t.Errorf("Gfx not cleared. Got %v, expected all zeroes.", go8.gfx[:])
+	}
+	checkPc(0x512+2, go8.pc, t)
+}
+
+func TestAddRegs(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.opcode = 0x8124
+	go8.V[1] = 2
+	go8.V[2] = 2
+	go8.pc = 0x512
+	go8.addRegs()
+	if go8.V[1] != 4 {
+		t.Errorf("Wrong value in V[1]. Got %d, expected %d", go8.V[1], 4)
+	}
+	checkPc(0x512+2, go8.pc, t)
+	go8.V[1] = 255
+	go8.V[2] = 1
+	go8.addRegs()
+	if go8.V[1] != 0 {
+		t.Errorf("Wrong value in V[1]. Got %d, expected %d", go8.V[1], 0)
+	}
+	if go8.V[0xF] != 1 {
+		t.Errorf("Carry flag not set. Got %d, expected %d", go8.V[0xF], 1)
 	}
 }
 
@@ -153,7 +169,13 @@ func allFieldsInit(emu *Go8) bool {
 		allArrZero16(emu.stack[:]) &&
 		emu.sp == 0 &&
 		allArrZero(emu.key[:]) &&
-		emu.drawFlag == 0
+		emu.drawFlag == false
+}
+
+func checkPc(expected int, actual uint16, t *testing.T) {
+	if actual != uint16(expected) {
+		t.Errorf("Wrong pc. Got %x, expected %x.", actual, expected)
+	}
 }
 
 func allArrZero(arr []uint8) bool {

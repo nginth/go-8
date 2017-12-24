@@ -43,7 +43,7 @@ type Go8 struct {
 	// keypad (input device)
 	key [16]uint8
 	// graphics
-	drawFlag uint8
+	drawFlag bool
 }
 
 func (emu *Go8) initialize() {
@@ -58,7 +58,7 @@ func (emu *Go8) initialize() {
 	memset16(emu.stack[:], 0x00)
 	emu.sp = 0x00
 	memset(emu.key[:], 0x00)
-	emu.drawFlag = 0x00
+	emu.drawFlag = false
 	// load fontset
 	for i := 0; i < 80; i++ {
 		emu.memory[i] = fontset[i]
@@ -85,6 +85,7 @@ func (emu *Go8) emulateCycle() {
 		case 0x000E:
 			// opcode 0x00EE : return from subroutine
 			emu.ret()
+
 		}
 	case 0x1000:
 		// opcode 0x1NNN : jump to address NNN
@@ -92,6 +93,13 @@ func (emu *Go8) emulateCycle() {
 	case 0x2000:
 		// opcode 0x2NNN : call subroutine at address NNN
 		emu.callSubroutine()
+	case 0x8000:
+		switch emu.opcode & 0x000F {
+		case 0x0004:
+			// opcode 0x8XY4 : Vx += Vy
+			emu.addRegs()
+		}
+
 	case 0xA000:
 		emu.index = emu.opcode & 0x0FFF
 		emu.pc += 2
@@ -131,6 +139,19 @@ func (emu *Go8) ret() {
 
 func (emu *Go8) clearScreen() {
 	memset(emu.gfx[:], 0)
+	emu.drawFlag = true
+	emu.pc += 2
+}
+
+func (emu *Go8) addRegs() {
+	x := emu.opcode & 0x0F00 >> 8
+	y := emu.opcode & 0x00F0 >> 4
+	if emu.V[y] > 0xFF-emu.V[x] {
+		emu.V[0xF] = 1
+	} else {
+		emu.V[0xF] = 0
+	}
+	emu.V[x] += emu.V[y]
 	emu.pc += 2
 }
 
