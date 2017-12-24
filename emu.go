@@ -124,6 +124,8 @@ func (emu *Go8) emulateCycle() {
 		emu.ifNotEqualReg()
 	case 0xA000:
 		emu.setIndex()
+	case 0xB000:
+		emu.addJump()
 	default:
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
 	}
@@ -300,6 +302,10 @@ func (emu *Go8) lshift() {
 func (emu *Go8) setIndex() {
 	emu.index = emu.opcode & 0x0FFF
 	emu.pc += 2
+}
+
+func (emu *Go8) addJump() {
+	emu.pc = uint16(emu.V[0]) + (emu.opcode & 0x0FFF)
 }
 
 func (emu *Go8) xreg() uint16 {

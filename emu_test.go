@@ -429,6 +429,16 @@ func TestSetIndex(t *testing.T) {
 	checkPc(0x512+2, go8.pc, t)
 }
 
+func TestAddJump(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.pc = 0x000
+	go8.opcode = 0xB123
+	go8.V[0] = 0x4
+	go8.addJump()
+	checkPc(0x123+0x4, go8.pc, t)
+}
+
 func allFieldsInit(emu *Go8) bool {
 	return emu.opcode == 0 &&
 		allArrZero(emu.memory[80:]) && // fontset stored < 0x50
