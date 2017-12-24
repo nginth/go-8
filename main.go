@@ -9,14 +9,14 @@ func run() {
 	go8.initialize()
 	// TODO: load ROM
 	// go8.loadROM("rom")
-	win := setupGraphics()
+	window := setupGraphics()
 	// emulation loop
-	for !win.Closed() {
+	for !window.Closed() {
 		//go8.emulateCycle()
 		if go8.drawFlag != 0 {
 			// TODO: draw graphics
 		}
-		win.Update()
+		updateWindow(window)
 		// TODO: store key press state
 		// go8.setKeys()
 	}
