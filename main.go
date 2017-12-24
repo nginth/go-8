@@ -5,12 +5,14 @@ import (
 )
 
 func run() {
+	// setupInput
 	go8 := Go8{}
+	// initialize
 	go8.initialize()
 	// TODO: load ROM
 	// go8.loadROM("rom")
 	window := setupGraphics()
-	go8.input = window
+	// emulation loop
 	for !window.Closed() {
 		go8.emulateCycle()
 		if go8.drawFlag {
