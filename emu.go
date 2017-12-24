@@ -151,8 +151,10 @@ func (emu *Go8) emulateCycle() {
 			emu.getKey()
 		case 0x0015:
 			emu.setDelay()
-		case 0x0015:
+		case 0x0018:
 			emu.setSound()
+		case 0x001E:
+			emu.addToIndex()
 		}
 	default:
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
@@ -441,6 +443,11 @@ func (emu *Go8) setDelay() {
 
 func (emu *Go8) setSound() {
 	emu.soundTimer = emu.V[emu.xreg()]
+	emu.pc += 2
+}
+
+func (emu *Go8) addToIndex() {
+	emu.index += uint16(emu.V[emu.xreg()])
 	emu.pc += 2
 }
 
