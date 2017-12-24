@@ -148,7 +148,7 @@ func (emu *Go8) emulateCycle() {
 		case 0x0007:
 			emu.storeDelay()
 		case 0x000A:
-			//emu.getKey()
+			emu.getKey()
 		}
 	default:
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
@@ -415,18 +415,18 @@ func (emu *Go8) storeDelay() {
 	emu.pc += 2
 }
 
-func (emu *Go8) getKey(window *pixelgl.Window) {
+func (emu *Go8) getKey() {
 	x := emu.xreg()
-	for !window.Closed() {
+	for !emu.input.Closed() {
 		for key := 0; key < len(emu.key); key++ {
 			button := keymapping[uint8(key)]
-			if window.Pressed(button) || window.JustPressed(button) || window.JustReleased(button) {
+			if emu.input.Pressed(button) || emu.input.JustPressed(button) || emu.input.JustReleased(button) {
 				emu.V[x] = uint8(key)
 				fmt.Println("asdf")
 				return
 			}
 		}
-		window.Update()
+		emu.input.Update()
 	}
 }
 

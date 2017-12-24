@@ -12,6 +12,7 @@ func run() {
 	// TODO: load ROM
 	// go8.loadROM("rom")
 	window := setupGraphics()
+	go8.input = window
 	// emulation loop
 	for !window.Closed() {
 		go8.emulateCycle()
