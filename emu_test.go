@@ -556,6 +556,26 @@ func TestRegDump(t *testing.T) {
 	checkPc(0x512+2, go8.pc, t)
 }
 
+func TestRegLoad(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.pc = 0x512
+	go8.opcode = 0xF365
+	go8.memory[0x200] = 0x1
+	go8.memory[0x201] = 0x2
+	go8.memory[0x202] = 0x3
+	go8.memory[0x203] = 0x4
+	go8.index = 0x200
+	go8.regLoad()
+	if go8.index != 0x200+4 {
+		t.Errorf("Wrong index. Got %x, expected %x.", go8.index, 0x200+4)
+	}
+	if go8.V[0] != 0x1 || go8.V[1] != 0x2 || go8.V[2] != 0x3 || go8.V[3] != 0x4 {
+		t.Errorf("Values not stored in memory properly. Got %v, expected %v.", go8.V[0:4], []uint8{0x1, 0x2, 0x3, 0x4})
+	}
+	checkPc(0x512+2, go8.pc, t)
+}
+
 func allFieldsInit(emu *Go8) bool {
 	return emu.opcode == 0 &&
 		allArrZero(emu.memory[80:]) && // fontset stored < 0x50

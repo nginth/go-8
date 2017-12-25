@@ -487,7 +487,13 @@ func (emu *Go8) regDump() {
 }
 
 func (emu *Go8) regLoad() {
-
+	x := emu.xreg()
+	var i uint16
+	for i = 0; i <= x; i++ {
+		emu.V[i] = emu.memory[emu.index]
+		emu.index++
+	}
+	emu.pc += 2
 }
 
 func (emu *Go8) xreg() uint16 {
