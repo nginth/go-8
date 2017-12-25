@@ -522,6 +522,20 @@ func TestStoreDelay(t *testing.T) {
 	checkPc(0x512+2, go8.pc, t)
 }
 
+func TestGetSprite(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.pc = 0x512
+	go8.opcode = 0xF029
+	go8.V[0] = 0x6
+	go8.getSprite()
+	if go8.index != 0x50+5*6 {
+		t.Errorf("Wrong index. Got %x, expected %x.", go8.index, 0x50+5*6)
+	}
+	checkPc(0x512+2, go8.pc, t)
+	// expected := []uint8{0xF0, 0x80, 0xF0, 0x90, 0xF0}
+}
+
 func allFieldsInit(emu *Go8) bool {
 	return emu.opcode == 0 &&
 		allArrZero(emu.memory[80:]) && // fontset stored < 0x50

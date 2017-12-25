@@ -8,7 +8,10 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 )
 
-const spriteWidth = 8
+const (
+	spriteWidth = 8
+	spriteMem   = 0x50
+)
 
 var fontset = [80]uint8{
 	0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -68,7 +71,7 @@ func (emu *Go8) initialize() {
 	emu.drawFlag = false
 	// load fontset
 	for i := 0; i < 80; i++ {
-		emu.memory[i] = fontset[i]
+		emu.memory[spriteMem+i] = fontset[i]
 	}
 }
 
@@ -448,6 +451,12 @@ func (emu *Go8) setSound() {
 
 func (emu *Go8) addToIndex() {
 	emu.index += uint16(emu.V[emu.xreg()])
+	emu.pc += 2
+}
+
+func (emu *Go8) getSprite() {
+	sprite := uint16(emu.V[emu.xreg()])
+	emu.index = 0x50 + sprite*5
 	emu.pc += 2
 }
 
