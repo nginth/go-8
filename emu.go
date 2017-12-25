@@ -79,7 +79,7 @@ func (emu *Go8) loadROM(filename string) {
 	data, err := ioutil.ReadFile(filename)
 	check(err)
 	for i := 0; i < len(data); i++ {
-		emu.memory[i+512] = data[i]
+		emu.memory[i+0x200] = data[i]
 	}
 }
 
@@ -203,6 +203,7 @@ func (emu *Go8) setKeys(window *pixelgl.Window) {
 		button := keymapping[uint8(key)]
 		if window.Pressed(button) || window.JustPressed(button) || window.JustReleased(button) {
 			emu.key[key] = 1
+			fmt.Printf("Key pressed: %d\n", key)
 		}
 	}
 }
@@ -385,6 +386,7 @@ func (emu *Go8) addJump() {
 func (emu *Go8) rand() {
 	x := emu.xreg()
 	emu.V[x] = uint8(rand.Intn(256)) & uint8((emu.opcode & 0x00FF))
+	emu.pc += 2
 }
 
 func (emu *Go8) draw() {

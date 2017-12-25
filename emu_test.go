@@ -36,6 +36,18 @@ func TestInitialize(t *testing.T) {
 	go8.drawFlag = true
 	go8.initialize()
 	if !allFieldsInit(&go8) {
+		fmt.Printf("opcode: %x\n", go8.opcode)
+		fmt.Printf("index: %x\n", go8.index)
+		fmt.Printf("pc: %x\n", go8.pc)
+		fmt.Printf("delayTimer: %x\n", go8.delayTimer)
+		fmt.Printf("soundTimer: %x\n", go8.soundTimer)
+		fmt.Printf("sp: %x\n", go8.sp)
+		fmt.Printf("drawFlag: %v\n", go8.drawFlag)
+		fmt.Printf("memory: %v\n", go8.memory)
+		fmt.Printf("V: %v\n", go8.V)
+		fmt.Printf("gfx: %v\n", go8.gfx)
+		fmt.Printf("stack: %v\n", go8.stack)
+		fmt.Printf("key: %v\n", go8.key)
 		t.Error("Not initialized to zero.")
 		fmt.Println(go8)
 	}
@@ -578,7 +590,7 @@ func TestRegLoad(t *testing.T) {
 
 func allFieldsInit(emu *Go8) bool {
 	return emu.opcode == 0 &&
-		allArrZero(emu.memory[80:]) && // fontset stored < 0x50
+		allArrZero(emu.memory[0x50+80:]) && // fontset stored < 0x50
 		allArrZero(emu.V[:]) &&
 		emu.index == 0 &&
 		emu.pc == 0x0200 &&
