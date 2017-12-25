@@ -452,6 +452,16 @@ func TestAddJump(t *testing.T) {
 	checkPc(0x123+0x4, go8.pc, t)
 }
 
+func TestRand(t *testing.T) {
+	go8 := Go8{}
+	go8.initialize()
+	go8.pc = 0x512
+	go8.opcode = 0xC123
+	// TODO: figure out how to actually test this (constant seed)
+	go8.rand()
+	checkPc(0x512+0x2, go8.pc, t)
+}
+
 func TestDraw(t *testing.T) {
 	go8 := Go8{}
 	go8.initialize()
