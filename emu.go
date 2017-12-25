@@ -158,6 +158,10 @@ func (emu *Go8) emulateCycle() {
 			emu.setSound()
 		case 0x001E:
 			emu.addToIndex()
+		case 0x0029:
+			emu.getSprite()
+		case 0x0033:
+			emu.storeBCD()
 		}
 	default:
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
@@ -457,6 +461,14 @@ func (emu *Go8) addToIndex() {
 func (emu *Go8) getSprite() {
 	sprite := uint16(emu.V[emu.xreg()])
 	emu.index = 0x50 + sprite*5
+	emu.pc += 2
+}
+
+func (emu *Go8) storeBCD() {
+	x := emu.V[emu.xreg()]
+	emu.memory[emu.index] = x / 100
+	emu.memory[emu.index+1] = (x / 10) % 10
+	emu.memory[emu.index+2] = (x % 100) % 10
 	emu.pc += 2
 }
 
