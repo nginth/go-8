@@ -29,6 +29,7 @@ func setupGraphics() *pixelgl.Window {
 }
 
 func updateWindow(window *pixelgl.Window, gfx []uint8) {
+	window.Clear(colornames.Black)
 	drawGfx(window, gfx[:])
 	window.Update()
 }
@@ -37,7 +38,7 @@ func drawGfx(window *pixelgl.Window, gfx []uint8) {
 	for y := 0; y < pixelHeight; y++ {
 		for x := 0; x < pixelWidth; x++ {
 			if gfx[x+y*pixelWidth] == 1 {
-				createSquare(x, y).Draw(window)
+				createSquare(x, pixelHeight-y).Draw(window)
 			}
 		}
 	}

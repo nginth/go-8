@@ -9,7 +9,7 @@ func run() {
 	go8 := Go8{}
 	// initialize
 	go8.initialize()
-	//go8.loadROM("roms/breakout.ch8")
+	go8.loadROM("roms/tetris.ch8")
 	window := setupGraphics()
 	go8.input = window
 	// emulation loop
