@@ -162,6 +162,10 @@ func (emu *Go8) emulateCycle() {
 			emu.getSprite()
 		case 0x0033:
 			emu.storeBCD()
+		case 0x0055:
+			emu.regDump()
+		case 0x0065:
+			emu.regLoad()
 		}
 	default:
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
@@ -470,6 +474,20 @@ func (emu *Go8) storeBCD() {
 	emu.memory[emu.index+1] = (x / 10) % 10
 	emu.memory[emu.index+2] = (x % 100) % 10
 	emu.pc += 2
+}
+
+func (emu *Go8) regDump() {
+	x := emu.xreg()
+	var i uint16
+	for i = 0; i <= x; i++ {
+		emu.memory[emu.index] = emu.V[i]
+		emu.index++
+	}
+	emu.pc += 2
+}
+
+func (emu *Go8) regLoad() {
+
 }
 
 func (emu *Go8) xreg() uint16 {
