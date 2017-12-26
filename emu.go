@@ -436,16 +436,13 @@ func (emu *Go8) storeDelay() {
 
 func (emu *Go8) getKey() {
 	x := emu.xreg()
-	for !emu.input.Closed() {
-		for key := 0; key < len(emu.key); key++ {
-			button := keymapping[uint8(key)]
-			if emu.input.Pressed(button) || emu.input.JustPressed(button) || emu.input.JustReleased(button) {
-				emu.V[x] = uint8(key)
-				fmt.Println("asdf")
-				return
-			}
+	for key := 0; key < len(emu.key); key++ {
+		if emu.key[key] == 1 {
+			emu.V[x] = uint8(key)
+			fmt.Println("asdf")
+			emu.pc += 2
+			break
 		}
-		emu.input.Update()
 	}
 }
 
