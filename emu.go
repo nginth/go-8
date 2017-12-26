@@ -56,59 +56,45 @@ type Go8 struct {
 	input    *pixelgl.Window
 }
 
-func (emu *Go8) initialize() {
-	emu.opcode = 0x0000
-	memset(emu.memory[:], 0x00)
-	memset(emu.V[:], 0x00)
-	emu.index = 0x0000
-	emu.pc = 0x0200
-	memset(emu.gfx[:], 0x00)
-	emu.delayTimer = 0x00
-	emu.soundTimer = 0x00
-	memset16(emu.stack[:], 0x00)
-	emu.sp = 0x00
-	memset(emu.key[:], 0x00)
-	emu.drawFlag = false
-	// load fontset
-	for i := 0; i < 80; i++ {
-		emu.memory[spriteMem+i] = fontset[i]
-	}
+var keymapping = map[uint8]pixelgl.Button{
+	0x1: pixelgl.Key1,
+	0x2: pixelgl.Key2,
+	0x3: pixelgl.Key3,
+	0xC: pixelgl.Key4,
+	0x4: pixelgl.KeyQ,
+	0x5: pixelgl.KeyW,
+	0x6: pixelgl.KeyE,
+	0xD: pixelgl.KeyR,
+	0x7: pixelgl.KeyA,
+	0x8: pixelgl.KeyS,
+	0x9: pixelgl.KeyD,
+	0xE: pixelgl.KeyF,
+	0xA: pixelgl.KeyZ,
+	0x0: pixelgl.KeyX,
+	0xB: pixelgl.KeyC,
+	0xF: pixelgl.KeyV,
 }
 
-func (emu *Go8) loadROM(filename string) {
-	data, err := ioutil.ReadFile(filename)
-	check(err)
-	for i := 0; i < len(data); i++ {
-		emu.memory[i+0x200] = data[i]
-	}
-}
-
-func (emu *Go8) emulateCycle() {
-	emu.opcode = emu.getOpcode()
-	// execute opcode
-	switch emu.opcode & 0xF000 {
-	case 0x0000:
-		switch emu.opcode & 0x000F {
+var fnTable = []func(*Go8){
+	0x0000: func(emu *Go8) {
+		switch emu.opcode & 0xF000 {
 		case 0x0000:
-			emu.clearScreen()
-		case 0x000E:
-			emu.ret()
+			switch emu.opcode & 0x000F {
+			case 0x0000:
+				emu.clearScreen()
+			case 0x000E:
+				emu.ret()
+			}
 		}
-	case 0x1000:
-		emu.jump()
-	case 0x2000:
-		emu.callSubroutine()
-	case 0x3000:
-		emu.ifEqual()
-	case 0x4000:
-		emu.ifNotEqual()
-	case 0x5000:
-		emu.ifEqualReg()
-	case 0x6000:
-		emu.setConstant()
-	case 0x7000:
-		emu.addConstant()
-	case 0x8000:
+	},
+	0x1000: (*Go8).jump,
+	0x2000: (*Go8).callSubroutine,
+	0x3000: (*Go8).ifEqual,
+	0x4000: (*Go8).ifNotEqual,
+	0x5000: (*Go8).ifEqualReg,
+	0x6000: (*Go8).setConstant,
+	0x7000: (*Go8).addConstant,
+	0x8000: func(emu *Go8) {
 		switch emu.opcode & 0x000F {
 		case 0x0000:
 			emu.setRegs()
@@ -129,24 +115,21 @@ func (emu *Go8) emulateCycle() {
 		case 0x000E:
 			emu.lshift()
 		}
-	case 0x9000:
-		emu.ifNotEqualReg()
-	case 0xA000:
-		emu.setIndex()
-	case 0xB000:
-		emu.addJump()
-	case 0xC000:
-		emu.rand()
-	case 0xD000:
-		emu.draw()
-	case 0xE000:
+	},
+	0x9000: (*Go8).ifNotEqualReg,
+	0xA000: (*Go8).setIndex,
+	0xB000: (*Go8).addJump,
+	0xC000: (*Go8).rand,
+	0xD000: (*Go8).draw,
+	0xE000: func(emu *Go8) {
 		switch emu.opcode & 0x00FF {
 		case 0x009E:
 			emu.ifPressed()
 		case 0x00A1:
 			emu.ifNotPressed()
 		}
-	case 0xF000:
+	},
+	0xF000: func(emu *Go8) {
 		switch emu.opcode & 0x00FF {
 		case 0x0007:
 			emu.storeDelay()
@@ -167,34 +150,48 @@ func (emu *Go8) emulateCycle() {
 		case 0x0065:
 			emu.regLoad()
 		}
-	default:
+	},
+}
+
+func (emu *Go8) emulateCycle() {
+	emu.opcode = emu.getOpcode()
+	op := fnTable[emu.opcode&0xF000]
+	if op == nil {
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
+	} else {
+		op(emu)
 	}
-	// update timers
 	emu.updateTimers()
+}
+
+func (emu *Go8) initialize() {
+	emu.opcode = 0x0000
+	memset(emu.memory[:], 0x00)
+	memset(emu.V[:], 0x00)
+	emu.index = 0x0000
+	emu.pc = 0x0200
+	memset(emu.gfx[:], 0x00)
+	emu.delayTimer = 0x00
+	emu.soundTimer = 0x00
+	memset16(emu.stack[:], 0x00)
+	emu.sp = 0x00
+	memset(emu.key[:], 0x00)
+	emu.drawFlag = false
+	for i := 0; i < 80; i++ {
+		emu.memory[spriteMem+i] = fontset[i]
+	}
+}
+
+func (emu *Go8) loadROM(filename string) {
+	data, err := ioutil.ReadFile(filename)
+	check(err)
+	for i := 0; i < len(data); i++ {
+		emu.memory[i+0x200] = data[i]
+	}
 }
 
 func (emu *Go8) getOpcode() uint16 {
 	return uint16(emu.memory[emu.pc])<<8 | uint16(emu.memory[emu.pc+1])
-}
-
-var keymapping = map[uint8]pixelgl.Button{
-	0x1: pixelgl.Key1,
-	0x2: pixelgl.Key2,
-	0x3: pixelgl.Key3,
-	0xC: pixelgl.Key4,
-	0x4: pixelgl.KeyQ,
-	0x5: pixelgl.KeyW,
-	0x6: pixelgl.KeyE,
-	0xD: pixelgl.KeyR,
-	0x7: pixelgl.KeyA,
-	0x8: pixelgl.KeyS,
-	0x9: pixelgl.KeyD,
-	0xE: pixelgl.KeyF,
-	0xA: pixelgl.KeyZ,
-	0x0: pixelgl.KeyX,
-	0xB: pixelgl.KeyC,
-	0xF: pixelgl.KeyV,
 }
 
 func (emu *Go8) setKeys(window *pixelgl.Window) {
