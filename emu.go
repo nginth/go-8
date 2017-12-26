@@ -53,7 +53,6 @@ type Go8 struct {
 	key [16]uint8
 	// graphics
 	drawFlag bool
-	input    *pixelgl.Window
 }
 
 var keymapping = map[uint8]pixelgl.Button{
@@ -196,7 +195,6 @@ func (emu *Go8) setKeys(window *pixelgl.Window) {
 		button := keymapping[uint8(key)]
 		if window.Pressed(button) {
 			emu.key[key] = 1
-			fmt.Printf("Key pressed: %d\n", key)
 		}
 	}
 }
@@ -432,7 +430,6 @@ func (emu *Go8) getKey() {
 	for key := 0; key < len(emu.key); key++ {
 		if emu.key[key] == 1 {
 			emu.V[x] = uint8(key)
-			fmt.Println("asdf")
 			emu.pc += 2
 			break
 		}
