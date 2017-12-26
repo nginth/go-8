@@ -396,15 +396,17 @@ func (emu *Go8) draw() {
 		for xline = 0; xline < spriteWidth; xline++ {
 			if (pixelLine & (0x80 >> xline)) != 0 {
 				pixel := uint16(x) + xline + ((uint16(y) + yline) * 64)
-				if pixel > 64*32 || pixel < 0 {
-					fmt.Printf("pixel %d, x: %d, y: %d, xline: %d, yline: %d, height: %d\n", pixel, x, y, xline, yline, height)
-				}
-				if emu.gfx[pixel] == 1 {
-					emu.V[0xF] = 1
-				}
+				// if emu.gfx[pixel] == 1 {
+				// 	fmt.Printf("pixel %d, x: %d, y: %d, xline: %d, yline: %d, height: %d\n", pixel, x, y, xline, yline, height)
+				// }
+				emu.V[0xF] = emu.V[0xF] | emu.gfx[pixel]
 				emu.gfx[pixel] ^= 1
 			}
 		}
+	}
+	if emu.V[0xF] > 0 {
+		// prevent weird bugs where emu.gfx[n] > 1
+		emu.V[0xF] = 1
 	}
 	emu.drawFlag = true
 	emu.pc += 2
