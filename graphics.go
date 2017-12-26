@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	width       = 640
-	height      = 320
+	width       = 640 + 20
+	height      = 320 + 20
 	thickness   = 0
 	pixelSize   = 10
 	pixelWidth  = 64
@@ -20,7 +20,6 @@ func setupGraphics() *pixelgl.Window {
 	cfg := pixelgl.WindowConfig{
 		Title:  "GO8",
 		Bounds: pixel.R(0, 0, width, height),
-		VSync:  true,
 	}
 	window, err := pixelgl.NewWindow(cfg)
 	check(err)

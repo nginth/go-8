@@ -384,6 +384,9 @@ func (emu *Go8) draw() {
 	x := emu.V[emu.xreg()]
 	y := emu.V[emu.yreg()]
 	height := emu.opcode & 0x000F
+	if uint8(height)+y > 32 {
+		height = uint16(32 - y)
+	}
 
 	emu.V[0xF] = 0
 	var yline uint16
@@ -393,6 +396,9 @@ func (emu *Go8) draw() {
 		for xline = 0; xline < spriteWidth; xline++ {
 			if (pixelLine & (0x80 >> xline)) != 0 {
 				pixel := uint16(x) + xline + ((uint16(y) + yline) * 64)
+				if pixel > 64*32 || pixel < 0 {
+					fmt.Printf("pixel %d, x: %d, y: %d, xline: %d, yline: %d, height: %d\n", pixel, x, y, xline, yline, height)
+				}
 				if emu.gfx[pixel] == 1 {
 					emu.V[0xF] = 1
 				}

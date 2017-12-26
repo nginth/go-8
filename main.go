@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/faiface/pixel/pixelgl"
 )
 
@@ -14,13 +11,13 @@ func run() {
 	window := setupGraphics()
 	for !window.Closed() {
 		go8.emulateCycle()
-		fmt.Printf("%x\n", go8.opcode)
+		//fmt.Printf("%x\n", go8.opcode)
 		if go8.drawFlag {
 			updateWindow(window, go8.gfx[:])
 		}
 		go8.setKeys(window)
 		// go about 60Hz
-		time.Sleep(time.Duration(17) * time.Millisecond)
+		//time.Sleep(time.Duration(17) * time.Millisecond)
 	}
 }
 
