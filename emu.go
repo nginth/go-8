@@ -87,6 +87,18 @@ var mathFnTable = []func(*Go8){
 	0x000E: (*Go8).lshift,
 }
 
+var utilFnTable = []func(*Go8){
+	0x0007: (*Go8).storeDelay,
+	0x000A: (*Go8).getKey,
+	0x0015: (*Go8).setDelay,
+	0x0018: (*Go8).setSound,
+	0x001E: (*Go8).addToIndex,
+	0x0029: (*Go8).getSprite,
+	0x0033: (*Go8).storeBCD,
+	0x0055: (*Go8).regDump,
+	0x0065: (*Go8).regLoad,
+}
+
 var fnTable = []func(*Go8){
 	0x0000: func(emu *Go8) {
 		switch emu.opcode & 0xF000 {
@@ -128,25 +140,11 @@ var fnTable = []func(*Go8){
 		}
 	},
 	0xF000: func(emu *Go8) {
-		switch emu.opcode & 0x00FF {
-		case 0x0007:
-			emu.storeDelay()
-		case 0x000A:
-			emu.getKey()
-		case 0x0015:
-			emu.setDelay()
-		case 0x0018:
-			emu.setSound()
-		case 0x001E:
-			emu.addToIndex()
-		case 0x0029:
-			emu.getSprite()
-		case 0x0033:
-			emu.storeBCD()
-		case 0x0055:
-			emu.regDump()
-		case 0x0065:
-			emu.regLoad()
+		op := utilFnTable[emu.opcode&0x00FF]
+		if op == nil {
+			fmt.Printf("Unknown opcode: %x\n", emu.opcode)
+		} else {
+			op(emu)
 		}
 	},
 }
