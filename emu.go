@@ -75,6 +75,18 @@ var keymapping = map[uint8]pixelgl.Button{
 	0xF: pixelgl.KeyV,
 }
 
+var mathFnTable = []func(*Go8){
+	0x0000: (*Go8).setRegs,
+	0x0001: (*Go8).orRegs,
+	0x0002: (*Go8).andRegs,
+	0x0003: (*Go8).xorRegs,
+	0x0004: (*Go8).addRegs,
+	0x0005: (*Go8).subRegs,
+	0x0006: (*Go8).rshift,
+	0x0007: (*Go8).subRegsReverse,
+	0x000E: (*Go8).lshift,
+}
+
 var fnTable = []func(*Go8){
 	0x0000: func(emu *Go8) {
 		switch emu.opcode & 0xF000 {
@@ -95,25 +107,11 @@ var fnTable = []func(*Go8){
 	0x6000: (*Go8).setConstant,
 	0x7000: (*Go8).addConstant,
 	0x8000: func(emu *Go8) {
-		switch emu.opcode & 0x000F {
-		case 0x0000:
-			emu.setRegs()
-		case 0x0001:
-			emu.orRegs()
-		case 0x0002:
-			emu.andRegs()
-		case 0x0003:
-			emu.xorRegs()
-		case 0x0004:
-			emu.addRegs()
-		case 0x0005:
-			emu.subRegs()
-		case 0x0006:
-			emu.rshift()
-		case 0x0007:
-			emu.subRegsReverse()
-		case 0x000E:
-			emu.lshift()
+		op := mathFnTable[emu.opcode&0x000F]
+		if op == nil {
+			fmt.Printf("Unknown opcode: %x\n", emu.opcode)
+		} else {
+			op(emu)
 		}
 	},
 	0x9000: (*Go8).ifNotEqualReg,
