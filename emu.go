@@ -194,7 +194,7 @@ func (emu *Go8) setKeys(window *pixelgl.Window) {
 	for key := 0; key < len(emu.key); key++ {
 		emu.key[key] = 0
 		button := keymapping[uint8(key)]
-		if window.Pressed(button) || window.JustPressed(button) || window.JustReleased(button) {
+		if window.Pressed(button) {
 			emu.key[key] = 1
 			fmt.Printf("Key pressed: %d\n", key)
 		}
