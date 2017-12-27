@@ -166,7 +166,7 @@ func (emu *Go8) updateTimers() {
 	}
 	if emu.soundTimer > 0 {
 		if emu.soundTimer == 1 {
-			fmt.Println("BEEP!!")
+			playSound()
 		}
 		emu.soundTimer--
 	}

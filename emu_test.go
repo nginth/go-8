@@ -598,6 +598,10 @@ func TestRegLoad(t *testing.T) {
 	checkPc(0x512+2, go8.pc, t)
 }
 
+func TestSound(t *testing.T) {
+	playSound()
+}
+
 func allFieldsInit(emu *Go8) bool {
 	return emu.opcode == 0 &&
 		allArrZero(emu.memory[0x50+80:]) && // fontset stored < 0x50
