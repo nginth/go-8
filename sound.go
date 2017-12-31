@@ -9,13 +9,18 @@ import (
 	"github.com/faiface/beep/wav"
 )
 
-// Sound - CHIP-8 sound device
+// SoundDevice - a generic sound device interfaces
+type SoundDevice interface {
+	playSound()
+}
+
+// Sound - SoundDevice implementation with the github.com/faiface/beep library
 type Sound struct {
 	stream beep.StreamSeekCloser
 }
 
-func newSound() *Sound {
-	f, err := os.Open("sound/beep.wav")
+func newSound(filename string) *Sound {
+	f, err := os.Open(filename)
 	check(err)
 
 	s, format, err := wav.Decode(f)

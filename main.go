@@ -9,12 +9,12 @@ import (
 
 func run() {
 	rom, timerFreq, clockFreq := getFlags()
-	go8 := newGo8(newSound(), newGraphics())
+	go8 := newGo8(newSound("sound/beep.wav"), newGraphics())
 	go8.loadROM(rom)
 	timerChan := time.NewTicker(timerFreq).C
 	cycleChan := time.NewTicker(clockFreq).C
 
-	for !go8.graphics.window.Closed() {
+	for !go8.graphics.closed() {
 		select {
 		case <-cycleChan:
 			go8.emulateCycle()

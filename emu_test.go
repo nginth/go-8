@@ -599,7 +599,7 @@ func TestRegLoad(t *testing.T) {
 }
 
 func TestSound(t *testing.T) {
-	sound := newSound()
+	sound := newSound("sound/beep.wav")
 	sound.playSound()
 }
 

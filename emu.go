@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/rand"
-
-	"github.com/faiface/pixel/pixelgl"
 )
 
 const (
@@ -34,8 +32,8 @@ type Go8 struct {
 	// keypad (input device)
 	key      [16]uint8
 	drawFlag bool
-	sound    *Sound
-	graphics *Graphics
+	sound    SoundDevice
+	graphics GraphicsDevice
 }
 
 var mathOpTable = []func(*Go8){
@@ -123,11 +121,11 @@ func (emu *Go8) emulateCycle() {
 	emu.updateTimers()
 }
 
-func newGo8(soundDevice *Sound, graphicsDevice *Graphics) *Go8 {
+func newGo8(s SoundDevice, g GraphicsDevice) *Go8 {
 	go8 := Go8{}
 	go8.initialize()
-	go8.sound = soundDevice
-	go8.graphics = graphicsDevice
+	go8.sound = s
+	go8.graphics = g
 	return &go8
 }
 
@@ -168,8 +166,7 @@ func (emu *Go8) getOpcode() uint16 {
 func (emu *Go8) setKeys() {
 	for key := 0; key < len(emu.key); key++ {
 		emu.key[key] = 0
-		button := keymapping[uint8(key)]
-		if emu.graphics.window.Pressed(button) {
+		if emu.graphics.pressed(key) {
 			emu.key[key] = 1
 		}
 	}
@@ -515,23 +512,4 @@ var fontset = [80]uint8{
 	0xE0, 0x90, 0x90, 0x90, 0xE0, // D
 	0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
 	0xF0, 0x80, 0xF0, 0x80, 0x80, // F
-}
-
-var keymapping = map[uint8]pixelgl.Button{
-	0x1: pixelgl.Key1,
-	0x2: pixelgl.Key2,
-	0x3: pixelgl.Key3,
-	0xC: pixelgl.Key4,
-	0x4: pixelgl.KeyQ,
-	0x5: pixelgl.KeyW,
-	0x6: pixelgl.KeyE,
-	0xD: pixelgl.KeyR,
-	0x7: pixelgl.KeyA,
-	0x8: pixelgl.KeyS,
-	0x9: pixelgl.KeyD,
-	0xE: pixelgl.KeyF,
-	0xA: pixelgl.KeyZ,
-	0x0: pixelgl.KeyX,
-	0xB: pixelgl.KeyC,
-	0xF: pixelgl.KeyV,
 }
