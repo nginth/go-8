@@ -9,7 +9,7 @@ import (
 
 func run() {
 	rom, timerFreq, clockFreq := getFlags()
-	go8 := newGo8()
+	go8 := newGo8(newSound(), newGraphics())
 	go8.loadROM(rom)
 	timerChan := time.NewTicker(timerFreq).C
 	cycleChan := time.NewTicker(clockFreq).C

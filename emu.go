@@ -123,9 +123,11 @@ func (emu *Go8) emulateCycle() {
 	emu.updateTimers()
 }
 
-func newGo8() *Go8 {
+func newGo8(soundDevice *Sound, graphicsDevice *Graphics) *Go8 {
 	go8 := Go8{}
 	go8.initialize()
+	go8.sound = soundDevice
+	go8.graphics = graphicsDevice
 	return &go8
 }
 
@@ -145,8 +147,6 @@ func (emu *Go8) initialize() {
 	for i := 0; i < 80; i++ {
 		emu.memory[spriteMem+i] = fontset[i]
 	}
-	emu.sound = newSound()
-	emu.graphics = newGraphics()
 }
 
 func (emu *Go8) loadROM(filename string) {
