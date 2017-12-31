@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"time"
 
 	"github.com/faiface/pixel/pixelgl"
@@ -20,7 +21,7 @@ func run() {
 		select {
 		case <-cycleChan:
 			go8.emulateCycle()
-			// fmt.Printf("%x\n", go8.opcode)
+			fmt.Printf("%x\n", go8.opcode)
 			if go8.drawFlag {
 				updateWindow(window, go8.gfx[:])
 				go8.drawFlag = false

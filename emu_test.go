@@ -337,7 +337,7 @@ func TestSubRegs(t *testing.T) {
 	if go8.V[1] != 1 {
 		t.Errorf("Wrong value for V[1]. Got %x, expected %x.", go8.V[1], 1)
 	}
-	if go8.V[0xF] != 0 {
+	if go8.V[0xF] != 1 {
 		t.Errorf("Wrong value for V[0xF] (borrow flag). Got %x, expected %x.", go8.V[0xF], 0)
 	}
 
@@ -351,7 +351,7 @@ func TestSubRegs(t *testing.T) {
 	if go8.V[1] != 255 {
 		t.Errorf("Wrong value for V[1]. Got %x, expected %x.", go8.V[1], 255)
 	}
-	if go8.V[0xF] != 1 {
+	if go8.V[0xF] != 0 {
 		t.Errorf("Wrong value for V[0xF] (borrow flag). Got %x, expected %x.", go8.V[0xF], 1)
 	}
 
@@ -369,7 +369,7 @@ func TestSubRegsReverse(t *testing.T) {
 	if go8.V[1] != 1 {
 		t.Errorf("Wrong value for V[1]. Got %x, expected %x.", go8.V[1], 1)
 	}
-	if go8.V[0xF] != 0 {
+	if go8.V[0xF] != 1 {
 		t.Errorf("Wrong value for V[0xF] (borrow flag). Got %x, expected %x.", go8.V[0xF], 0)
 	}
 
@@ -383,7 +383,7 @@ func TestSubRegsReverse(t *testing.T) {
 	if go8.V[1] != 255 {
 		t.Errorf("Wrong value for V[1]. Got %x, expected %x.", go8.V[1], 255)
 	}
-	if go8.V[0xF] != 1 {
+	if go8.V[0xF] != 0 {
 		t.Errorf("Wrong value for V[0xF] (borrow flag). Got %x, expected %x.", go8.V[0xF], 1)
 	}
 

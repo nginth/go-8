@@ -11,6 +11,7 @@ import (
 const (
 	spriteWidth = 8
 	spriteMem   = 0x50
+	startPc     = 0x200
 )
 
 // Go8 - CHIP-8 emulator
@@ -125,7 +126,7 @@ func (emu *Go8) initialize() {
 	memset(emu.memory[:], 0x00)
 	memset(emu.V[:], 0x00)
 	emu.index = 0x0000
-	emu.pc = 0x0200
+	emu.pc = startPc
 	memset(emu.gfx[:], 0x00)
 	emu.delayTimer = 0x00
 	emu.soundTimer = 0x00
