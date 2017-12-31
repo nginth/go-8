@@ -37,7 +37,7 @@ type Go8 struct {
 	sound    *Sound
 }
 
-var mathFnTable = []func(*Go8){
+var mathOpTable = []func(*Go8){
 	0x0000: (*Go8).setRegs,
 	0x0001: (*Go8).orRegs,
 	0x0002: (*Go8).andRegs,
@@ -49,7 +49,7 @@ var mathFnTable = []func(*Go8){
 	0x000E: (*Go8).lshift,
 }
 
-var utilFnTable = []func(*Go8){
+var utilOpTable = []func(*Go8){
 	0x0007: (*Go8).storeDelay,
 	0x000A: (*Go8).getKey,
 	0x0015: (*Go8).setDelay,
@@ -61,7 +61,7 @@ var utilFnTable = []func(*Go8){
 	0x0065: (*Go8).regLoad,
 }
 
-var fnTable = []func(*Go8){
+var opTable = []func(*Go8){
 	0x0000: func(emu *Go8) {
 		switch emu.opcode & 0xF000 {
 		case 0x0000:
@@ -81,7 +81,7 @@ var fnTable = []func(*Go8){
 	0x6000: (*Go8).setConstant,
 	0x7000: (*Go8).addConstant,
 	0x8000: func(emu *Go8) {
-		op := mathFnTable[emu.opcode&0x000F]
+		op := mathOpTable[emu.opcode&0x000F]
 		if op == nil {
 			fmt.Printf("Unknown opcode: %x\n", emu.opcode)
 		} else {
@@ -102,7 +102,7 @@ var fnTable = []func(*Go8){
 		}
 	},
 	0xF000: func(emu *Go8) {
-		op := utilFnTable[emu.opcode&0x00FF]
+		op := utilOpTable[emu.opcode&0x00FF]
 		if op == nil {
 			fmt.Printf("Unknown opcode: %x\n", emu.opcode)
 		} else {
@@ -113,7 +113,7 @@ var fnTable = []func(*Go8){
 
 func (emu *Go8) emulateCycle() {
 	emu.opcode = emu.getOpcode()
-	op := fnTable[emu.opcode&0xF000]
+	op := opTable[emu.opcode&0xF000]
 	if op == nil {
 		fmt.Printf("Unknown opcode: %x\n", emu.opcode)
 	} else {

@@ -9,6 +9,7 @@ import (
 	"github.com/faiface/beep/wav"
 )
 
+// Sound - CHIP-8 sound device
 type Sound struct {
 	stream beep.StreamSeekCloser
 }
