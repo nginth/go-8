@@ -35,6 +35,7 @@ type Go8 struct {
 	key      [16]uint8
 	drawFlag bool
 	sound    *Sound
+	graphics *Graphics
 }
 
 var mathOpTable = []func(*Go8){
@@ -122,6 +123,12 @@ func (emu *Go8) emulateCycle() {
 	emu.updateTimers()
 }
 
+func newGo8() *Go8 {
+	go8 := Go8{}
+	go8.initialize()
+	return &go8
+}
+
 func (emu *Go8) initialize() {
 	emu.opcode = 0x0000
 	memset(emu.memory[:], 0x00)
@@ -139,6 +146,7 @@ func (emu *Go8) initialize() {
 		emu.memory[spriteMem+i] = fontset[i]
 	}
 	emu.sound = newSound()
+	emu.graphics = newGraphics()
 }
 
 func (emu *Go8) loadROM(filename string) {
@@ -149,15 +157,19 @@ func (emu *Go8) loadROM(filename string) {
 	}
 }
 
+func (emu *Go8) updateWindow() {
+	emu.graphics.updateWindow(emu.gfx[:])
+}
+
 func (emu *Go8) getOpcode() uint16 {
 	return uint16(emu.memory[emu.pc])<<8 | uint16(emu.memory[emu.pc+1])
 }
 
-func (emu *Go8) setKeys(window *pixelgl.Window) {
+func (emu *Go8) setKeys() {
 	for key := 0; key < len(emu.key); key++ {
 		emu.key[key] = 0
 		button := keymapping[uint8(key)]
-		if window.Pressed(button) {
+		if emu.graphics.window.Pressed(button) {
 			emu.key[key] = 1
 		}
 	}

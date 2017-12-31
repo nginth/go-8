@@ -16,7 +16,11 @@ const (
 	pixelHeight = 32
 )
 
-func setupGraphics() *pixelgl.Window {
+type Graphics struct {
+	window *pixelgl.Window
+}
+
+func newGraphics() *Graphics {
 	cfg := pixelgl.WindowConfig{
 		Title:  "GO8",
 		Bounds: pixel.R(0, 0, width, height),
@@ -24,29 +28,29 @@ func setupGraphics() *pixelgl.Window {
 	window, err := pixelgl.NewWindow(cfg)
 	check(err)
 	window.Clear(colornames.Black)
-	return window
+	return &Graphics{window: window}
 }
 
-func updateWindow(window *pixelgl.Window, gfx []uint8) {
-	window.Clear(colornames.Black)
-	drawGfx(window, gfx[:])
-	window.Update()
+func (graphics *Graphics) updateWindow(gfx []uint8) {
+	graphics.window.Clear(colornames.Black)
+	graphics.drawGfx(gfx[:])
+	graphics.window.Update()
 }
 
-func drawGfx(window *pixelgl.Window, gfx []uint8) {
+func (graphics *Graphics) drawGfx(gfx []uint8) {
 	imd := imdraw.New(nil)
 	imd.Color = colornames.White
 	for y := 0; y < pixelHeight; y++ {
 		for x := 0; x < pixelWidth; x++ {
 			if gfx[x+y*pixelWidth] == 1 {
-				createSquare(imd, x, pixelHeight-y)
+				graphics.createSquare(imd, x, pixelHeight-y)
 			}
 		}
 	}
-	imd.Draw(window)
+	imd.Draw(graphics.window)
 }
 
-func createSquare(imd *imdraw.IMDraw, xpos, ypos int) {
+func (graphics *Graphics) createSquare(imd *imdraw.IMDraw, xpos, ypos int) {
 	x := float64(pixelSize * xpos)
 	y := float64(pixelSize * ypos)
 	imd.Push(pixel.V(x, y))           // bottom left

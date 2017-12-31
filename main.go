@@ -9,22 +9,20 @@ import (
 
 func run() {
 	rom, timerFreq, clockFreq := getFlags()
-	go8 := Go8{}
-	go8.initialize()
+	go8 := newGo8()
 	go8.loadROM(rom)
 	timerChan := time.NewTicker(timerFreq).C
 	cycleChan := time.NewTicker(clockFreq).C
 
-	window := setupGraphics()
-	for !window.Closed() {
+	for !go8.graphics.window.Closed() {
 		select {
 		case <-cycleChan:
 			go8.emulateCycle()
 			if go8.drawFlag {
-				updateWindow(window, go8.gfx[:])
+				go8.updateWindow()
 				go8.drawFlag = false
 			}
-			go8.setKeys(window)
+			go8.setKeys()
 		case <-timerChan:
 			go8.updateTimers()
 		}
