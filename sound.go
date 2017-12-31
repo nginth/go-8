@@ -9,21 +9,26 @@ import (
 	"github.com/faiface/beep/wav"
 )
 
-func playSound() {
+type Sound struct {
+	stream beep.StreamSeekCloser
+}
+
+func newSound() *Sound {
 	f, err := os.Open("sound/beep.wav")
 	check(err)
 
 	s, format, err := wav.Decode(f)
 	check(err)
 
-	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+	speaker.Init(
+		format.SampleRate,
+		format.SampleRate.N(time.Second/10),
+	)
 
-	done := make(chan struct{})
+	return &Sound{stream: s}
+}
 
-	speaker.Play(beep.Seq(s, beep.Callback(func() {
-		//time.Sleep(time.Second)
-		close(done)
-	})))
-
-	<-done
+func (sound *Sound) playSound() {
+	speaker.Play(beep.Seq(sound.stream))
+	sound.stream.Seek(0)
 }

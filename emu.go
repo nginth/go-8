@@ -34,6 +34,7 @@ type Go8 struct {
 	// keypad (input device)
 	key      [16]uint8
 	drawFlag bool
+	sound    *Sound
 }
 
 var mathFnTable = []func(*Go8){
@@ -137,6 +138,7 @@ func (emu *Go8) initialize() {
 	for i := 0; i < 80; i++ {
 		emu.memory[spriteMem+i] = fontset[i]
 	}
+	emu.sound = newSound()
 }
 
 func (emu *Go8) loadROM(filename string) {
@@ -167,7 +169,7 @@ func (emu *Go8) updateTimers() {
 	}
 	if emu.soundTimer > 0 {
 		if emu.soundTimer == 1 {
-			playSound()
+			emu.sound.playSound()
 		}
 		emu.soundTimer--
 	}

@@ -599,7 +599,8 @@ func TestRegLoad(t *testing.T) {
 }
 
 func TestSound(t *testing.T) {
-	playSound()
+	sound := newSound()
+	sound.playSound()
 }
 
 func allFieldsInit(emu *Go8) bool {
