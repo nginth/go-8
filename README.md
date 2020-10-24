@@ -3,6 +3,7 @@
 This emulator is a WIP, so while all functionality is implemented, there may be bugs or inconsistencies!
 
 ### Installation
+Note: requires Go version >= 1.11.
 
 ```bash
 go get https://github.com/nginth/go-8
